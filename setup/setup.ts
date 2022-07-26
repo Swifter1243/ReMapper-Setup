@@ -9,6 +9,7 @@ if (Deno.args.length < 1) {
 }
 
 const name = Deno.args[0]
+const includeMapFiles = Deno.args.some(e => e === "--map")
 
 const currentFolder = Deno.cwd();
 
@@ -70,8 +71,6 @@ try {
 await Deno.stat(templatePath)
 
 // now copy to path
-const includeMapFiles = true // TODO: Make this an argument
-
 const ignoredFiles = ["setup"]
 
 const tasks: Promise<void>[] = []
