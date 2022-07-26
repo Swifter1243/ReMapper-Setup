@@ -10,7 +10,9 @@ if (Deno.args.length < 1) {
 
 const name = Deno.args[0]
 const includeMapFiles = Deno.args.some(e => e === "--map" || e === "-m")
-let ref: string | undefined = Deno.args[Deno.args.findIndex(e => e === "--version" || e === "-v") + 1]
+
+const refIndex = Deno.args.findIndex(e => e === "--version" || e === "-v")
+let ref = refIndex !== -1 ? Deno.args[Deno.args.findIndex(e => e === "--version" || e === "-v") + 1] : undefined
 
 const currentFolder = Deno.cwd();
 
@@ -26,8 +28,6 @@ if (!userDir) {
 }
 
 const remapperDirectory = path.join(userDir, "remapper_setup")
-
-
 
 if (!ref) {
     const latestRelease = await fetch("https://api.github.com/repos/Swifter1243/ReMapper-Setup/releases/latest", {
@@ -72,7 +72,7 @@ try {
 await Deno.stat(templatePath)
 
 // now copy to path
-const ignoredFiles = ["setup"]
+const ignoredFiles = ["setup", ".git"]
 
 const tasks: Promise<void>[] = []
 
