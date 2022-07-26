@@ -15,7 +15,7 @@ const currentFolder = Deno.cwd();
 
 const destFolder = path.join(currentFolder, name)
 
-await Deno.mkdir(destFolder)
+if (name === ".") await Deno.mkdir(destFolder)
 
 const userDir = configDir();
 
