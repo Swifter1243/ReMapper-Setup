@@ -3,16 +3,11 @@
 import cloneTemplateToCache from "./clone.ts";
 import { configDir, path, fs } from "./deps.ts";
 
-if (Deno.args.length < 1) {
-    console.error("Provide the name for the result folder")
-    Deno.exit(1)
-}
-
-const name = Deno.args[0]
-const includeMapFiles = Deno.args.some(e => e === "--map" || e === "-m")
+const name = Deno.args[0] ?? "."
+const includeMapFiles = Deno.args.some(e => e === "--map" || e === "-m") || Deno.args[0]
 
 const refIndex = Deno.args.findIndex(e => e === "--version" || e === "-v")
-let ref = refIndex !== -1 ? Deno.args[Deno.args.findIndex(e => e === "--version" || e === "-v") + 1] : undefined
+let ref = refIndex !== -1 ? Deno.args[refIndex + 1] : undefined
 
 const currentFolder = Deno.cwd();
 
