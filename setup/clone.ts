@@ -1,15 +1,8 @@
-import { configDir, path as osPath, fs, streams } from "./deps.ts";
+import { streams } from "./deps.ts";
 
-export default async function cloneTemplateToCache(path: string, ref: string) :Promise<void> {
-    try {
-        await Deno.stat("git")
-    } catch (e) {
-        console.error("Unable to detect git, make sure you have it installed")
-        throw e;
-    }
-
+export default async function cloneTemplateToCache(path: string, ref: string): Promise<void> {
     const process = Deno.run({
-        "cmd": ["git", "clone", "--shallow", "--depth", "1", `-o`, ref, `https://github.com/Swifter1243/ReMapper-Setup.git`, path],
+        "cmd": ["git", "clone", "--depth", "1", `-o`, ref, `https://github.com/Swifter1243/ReMapper-Setup.git`, path],
         stdout: "piped",
         stderr: "piped",
     })
