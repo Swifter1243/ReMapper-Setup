@@ -26,7 +26,9 @@ export default async function cloneTemplateToCache(path: string, ref: string): P
             } else {
                 console.error("Download git using at https://git-scm.com/downloads")
             }
+            Deno.exit(1)
         }
+        throw e;
     }
 
     console.log(`Cloned the template with revision ${ref} to ${path}`)
