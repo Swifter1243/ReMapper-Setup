@@ -24,7 +24,7 @@ export default async function cloneTemplateToCache(path: string, ref: string): P
             if (Deno.build.os === "linux") {
                 console.error("Download git using your system's package manager")
             } else {
-                console.error("Download git using at https://git-scm.com/downloads")
+                console.error("Download git at https://git-scm.com/downloads")
             }
             Deno.exit(1)
         }
