@@ -1,6 +1,6 @@
-import { Difficulty } from "https://deno.land/x/remapper/src/mod.ts"
+import { Difficulty } from "https://deno.land/x/remapper@2.0.0/src/mod.ts" // BUMP TO LATEST
 
-const map = new Difficulty("ExpertPlusLawless.dat", "ExpertPlusStandard.dat");
+const map = new Difficulty("ExpertPlusLawless", "ExpertPlusStandard");
 
 // SCRIPT
 
