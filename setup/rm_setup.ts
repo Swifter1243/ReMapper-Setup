@@ -71,6 +71,7 @@ const ignoredFiles = ["setup", ".git"]
 
 const tasks: Promise<void>[] = []
 
+console.log("Copying from template path", templatePath)
 for await (const file of Deno.readDir(templatePath)) {
     if (ignoredFiles.includes(file.name)) continue
 
