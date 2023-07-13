@@ -1,7 +1,17 @@
-import { Difficulty } from "https://deno.land/x/remapper@3.1.2/src/mod.ts"
+import { Difficulty } from @VERSION
 
 const map = new Difficulty("ExpertPlusLawless", "ExpertPlusStandard");
 
-// SCRIPT
+// ----------- { SCRIPT } -----------
+
+
+// Example: Run code on every note!
+
+// map.notes.forEach(note => {
+//     console.log(note.time)
+// })
+
+
+// ----------- { OUTPUT } -----------
 
 map.save();

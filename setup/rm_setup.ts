@@ -50,7 +50,7 @@ try {
 } catch (e) {
     if (e! instanceof Deno.errors.AlreadyExists) throw e;
 }
-    
+
 const templatePath = path.join(remapperDirectory, ref)
 
 try {
@@ -85,5 +85,22 @@ for await (const file of Deno.readDir(templatePath)) {
 }
 
 await Promise.all(tasks)
+
+// Automatically update version
+const latestRelease = await fetch("https://api.github.com/repos/Swifter1243/ReMapper/releases/latest", {
+    headers: {
+        "Accept": "application/vnd.github+json"
+    }
+})
+if (latestRelease.status != 200) {
+    console.error(`Received error ${latestRelease.status} while fetching latest release name`)
+    Deno.exit(2)
+}
+const latestRM = (await latestRelease.json())["tag_name"]
+
+const scriptPath = path.join(destFolder, "script.ts")
+let fileContents = await Deno.readTextFile(scriptPath)
+fileContents = fileContents.replace("@VERSION", `"https://deno.land/x/remapper@${latestRM}/src/mod.ts"`)
+await Deno.writeTextFile(scriptPath, fileContents)
 
 console.log(`Successfully setup new map at ${destFolder}`)

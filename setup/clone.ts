@@ -1,5 +1,3 @@
-import { streams } from "./deps.ts";
-
 export default async function cloneTemplateToCache(
   path: string,
   ref: string
