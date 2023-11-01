@@ -1,6 +1,6 @@
-import { Difficulty } from @VERSION
+import * as rm { Difficulty } from @VERSION
 
-const map = new Difficulty("ExpertPlusLawless", "ExpertPlusStandard");
+const map = new rm.Difficulty("ExpertPlusLawless", "ExpertPlusStandard");
 
 // ----------- { SCRIPT } -----------
 
