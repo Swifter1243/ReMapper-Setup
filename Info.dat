@@ -26,16 +26,16 @@
       ]
     },
     {
-      "_beatmapCharacteristicName": "Lawless",
+      "_beatmapCharacteristicName": "NoArrows",
       "_difficultyBeatmaps": [
         {
           "_difficulty": "ExpertPlus",
           "_difficultyRank": 9,
-          "_beatmapFilename": "ExpertPlusLawless.dat",
+          "_beatmapFilename": "ExpertPlusNoArrows.dat",
           "_noteJumpMovementSpeed": 16,
           "_noteJumpStartBeatOffset": 0,
           "_customData": {
-            "_difficultyLabel": "input (don't play)"
+            "_difficultyLabel": "input"
           }
         }
       ]

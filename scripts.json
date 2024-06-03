@@ -10,9 +10,10 @@
     },
     "watcher": {
         "exts": [
+            "rmmodel",
             "ts",
             "js",
-            "rmmodel"
+            "manifest"
         ],
         "legacy": false
     }
