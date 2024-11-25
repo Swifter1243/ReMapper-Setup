@@ -62,12 +62,14 @@ async function program() {
     const cacheBaseDirectory = getCacheBaseDirectory()
     const latestRM = await getLatestReMapperReleaseTag()
 
+    // setup directories
     await Promise.all([
         fs.ensureDir(destination),
         fs.ensureDir(cacheBaseDirectory)
     ])
     const cacheVersionPath = await getCacheVersionPath(cacheBaseDirectory, version)
 
+    // copy files
     const tasks: Promise<void>[] = []
     function addTextFile(file: string, changeContents?: (fileContents: string) => string) {
         const src = path.join(cacheVersionPath, file)
@@ -86,6 +88,7 @@ async function program() {
     addTextFile('script.ts', editScript(latestRM))
     addTextFile('scripts.json')
 
+    // finish
     await Promise.all(tasks)
     console.log(`Successfully setup new map at ${destination}`)
 }
