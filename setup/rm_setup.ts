@@ -24,8 +24,8 @@ if (!userDir) {
 
 const remapperDirectory = path.join(userDir, "remapper_setup")
 
-if (!ref) {
-    const latestRelease = await fetch("https://api.github.com/repos/Swifter1243/ReMapper-Setup/releases/latest", {
+async function getLatestReleaseTag(uri: string) {
+    const latestRelease = await fetch(uri, {
         headers: {
             "Accept": "application/vnd.github+json"
         }
@@ -35,7 +35,11 @@ if (!ref) {
         Deno.exit(2)
     }
     const json = await latestRelease.json()
-    ref = json["tag_name"]!
+    return json["tag_name"]!
+}
+
+if (!ref) {
+    ref = await getLatestReleaseTag("https://api.github.com/repos/Swifter1243/ReMapper-Setup/releases/latest")
 }
 
 if (!ref) {
@@ -87,16 +91,7 @@ for await (const file of Deno.readDir(templatePath)) {
 await Promise.all(tasks)
 
 // Automatically update version
-const latestRelease = await fetch("https://api.github.com/repos/Swifter1243/ReMapper/releases/latest", {
-    headers: {
-        "Accept": "application/vnd.github+json"
-    }
-})
-if (latestRelease.status != 200) {
-    console.error(`Received error ${latestRelease.status} while fetching latest release name`)
-    Deno.exit(2)
-}
-const latestRM = (await latestRelease.json())["tag_name"]
+const latestRM = await getLatestReleaseTag("https://api.github.com/repos/Swifter1243/ReMapper/releases/latest")
 
 const scriptPath = path.join(destFolder, "script.ts")
 let fileContents = await Deno.readTextFile(scriptPath)
