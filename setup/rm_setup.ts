@@ -33,22 +33,13 @@ async function getLatestReMapperSetupReleaseTag() {
 }
 
 async function getCacheVersionPath(cacheBaseDirectory: string, version: string) {
-    const templatePath = path.join(cacheBaseDirectory, version)
+    const cacheVersionPath = path.join(cacheBaseDirectory, version)
 
-    try {
-        await Deno.stat(templatePath)
-    } catch (e) {
-        if (e instanceof Deno.errors.NotFound) {
-            await cloneTemplateToCache(templatePath, version);
-        } else {
-            throw e;
-        }
+    if (!fs.existsSync(cacheVersionPath)) {
+        await cloneTemplateToCache(cacheVersionPath, version);
     }
 
-    // Validate the path exists
-    await Deno.stat(templatePath)
-
-    return templatePath
+    return cacheVersionPath
 }
 
 function getNamedDenoArgument(name: string, letter: string) {
