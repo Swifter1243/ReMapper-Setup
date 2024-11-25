@@ -57,8 +57,8 @@ function editScript(latestRM: string) {
 }
 
 async function program() {
-    const destination = getNamedDenoArgument('destination', 'd') ?? Deno.cwd()
-    const version = getNamedDenoArgument('version', 'v') ?? await getLatestReMapperSetupReleaseTag()
+    const destination = Deno.cwd()
+    const version = await getLatestReMapperSetupReleaseTag()
     const multipleDifficulties = getNamedDenoArgument('multi-diff', 'm') !== undefined
     const cacheBaseDirectory = getCacheBaseDirectory()
     const latestRM = await getLatestReMapperReleaseTag()
