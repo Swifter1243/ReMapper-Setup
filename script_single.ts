@@ -1,6 +1,6 @@
 import * as rm from @VERSION
 
-const map = await rm.readDifficulty("ExpertPlusNoArrows", "ExpertPlusStandard")
+const map = new rm.Difficulty("ExpertPlusNoArrows", "ExpertPlusStandard")
 
 // ----------- { SCRIPT } -----------
 

@@ -59,8 +59,13 @@ function editScript(latestRM: string) {
 async function program() {
     const destination = getNamedDenoArgument('destination', 'd') ?? Deno.cwd()
     const version = getNamedDenoArgument('version', 'v') ?? await getLatestReMapperSetupReleaseTag()
+    const multipleDifficulties = getNamedDenoArgument('multi-diff', 'm') !== undefined
     const cacheBaseDirectory = getCacheBaseDirectory()
     const latestRM = await getLatestReMapperReleaseTag()
+
+    if (multipleDifficulties) {
+        throw new Error('Currently there\'s no examples for multi-diff scripts. That only exists in ReMapper 4.0.0, which isn\'t out yet.')
+    }
 
     // setup directories
     await Promise.all([
@@ -71,9 +76,9 @@ async function program() {
 
     // copy files
     const tasks: Promise<void>[] = []
-    function addTextFile(file: string, changeContents?: (fileContents: string) => string) {
-        const src = path.join(cacheVersionPath, file)
-        const dest = path.join(destination, file)
+    function addTextFile(srcFile: string, dstFile = srcFile, changeContents?: (fileContents: string) => string) {
+        const src = path.join(cacheVersionPath, srcFile)
+        const dest = path.join(destination, dstFile)
         async function doProcess() {
             let fileContents = await Deno.readTextFile(src)
 
@@ -85,7 +90,7 @@ async function program() {
         }
         tasks.push(doProcess())
     }
-    addTextFile('script.ts', editScript(latestRM))
+    addTextFile('script_single.ts', 'script.ts', editScript(latestRM))
     addTextFile('scripts.json')
 
     // finish
