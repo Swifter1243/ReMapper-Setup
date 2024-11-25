@@ -25,7 +25,11 @@ async function getLatestReleaseTag(uri: string) {
         Deno.exit(2)
     }
     const json = await latestRelease.json()
-    return json["tag_name"]!
+    return json["tag_name"] as string
+}
+
+async function getLatestReMapperSetupReleaseTag() {
+    return await getLatestReleaseTag("https://api.github.com/repos/Swifter1243/ReMapper-Setup/releases/latest")
 }
 
 async function getCacheVersionPath(cacheBaseDirectory: string, version: string) {
@@ -47,54 +51,30 @@ async function getCacheVersionPath(cacheBaseDirectory: string, version: string) 
     return templatePath
 }
 
-const name = Deno.args[0] ?? "."
-const includeMapFiles = Deno.args.some(e => e === "--map" || e === "-m") || Deno.args[0]
+function getNamedDenoArgument(name: string, letter: string) {
+    return Deno.args.find(a => a === `--${name}` || a === `-${letter}`)
+}
 
-const versionIndex = Deno.args.findIndex(e => e === "--version" || e === "-v")
-let version = versionIndex !== -1 ? Deno.args[versionIndex + 1] : undefined
-
-const currentFolder = Deno.cwd();
-
-const destFolder = path.join(currentFolder, name)
-
-if (name !== ".") await Deno.mkdir(destFolder)
-
+const destination = getNamedDenoArgument('destination', 'd') ?? Deno.cwd()
+const version = getNamedDenoArgument('version', 'v') ?? await getLatestReMapperSetupReleaseTag()
 const cacheBaseDirectory = getCacheBaseDirectory()
 
 // make sure that cache base directory exists
-try {
-    await Deno.mkdir(cacheBaseDirectory, {
-        recursive: true
-    })
-} catch (e) {
-    if (e! instanceof Deno.errors.AlreadyExists) throw e;
-}
-
-if (!version) {
-    version = await getLatestReleaseTag("https://api.github.com/repos/Swifter1243/ReMapper-Setup/releases/latest")
-}
-
-if (!version) {
-    console.error(`No ref specified`)
-    Deno.exit(2)
-}
+await fs.ensureDir(destination)
+await fs.ensureDir(cacheBaseDirectory)
 
 const cacheVersionPath = await getCacheVersionPath(cacheBaseDirectory, version)
 
 // now copy to path
 const ignoredFiles = ["setup", ".git"]
-
 const tasks: Promise<void>[] = []
 
 console.log("Copying from template path", cacheVersionPath)
 for await (const file of Deno.readDir(cacheVersionPath)) {
     if (ignoredFiles.includes(file.name)) continue
 
-    // Ignore .dat files if need be
-    if (!includeMapFiles && path.extname(file.name) == ".dat") continue;
-
     const src = path.join(cacheVersionPath, file.name)
-    const dest = path.join(destFolder, file.name)
+    const dest = path.join(destination, file.name)
 
     tasks.push(fs.copy(src, dest))
 }
@@ -104,9 +84,9 @@ await Promise.all(tasks)
 // Automatically update version
 const latestRM = await getLatestReleaseTag("https://api.github.com/repos/Swifter1243/ReMapper/releases/latest")
 
-const scriptPath = path.join(destFolder, "script.ts")
+const scriptPath = path.join(destination, "script.ts")
 let fileContents = await Deno.readTextFile(scriptPath)
 fileContents = fileContents.replace("@VERSION", `"https://deno.land/x/remapper@${latestRM}/src/mod.ts"`)
 await Deno.writeTextFile(scriptPath, fileContents)
 
-console.log(`Successfully setup new map at ${destFolder}`)
+console.log(`Successfully setup new map at ${destination}`)
