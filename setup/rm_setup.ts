@@ -7,8 +7,7 @@ function getCacheBaseDirectory() {
     const userDir = configDir();
 
     if (!userDir) {
-        console.error("Unable to find user config directory!");
-        Deno.exit(1);
+        throw new Error("Unable to find user config directory!")
     }
 
     return path.join(userDir, "remapper_setup")
@@ -21,10 +20,12 @@ async function getLatestReleaseTag(uri: string) {
         }
     })
     if (latestRelease.status != 200) {
-        console.error(`Received error ${latestRelease.status} while fetching latest release name`)
-        Deno.exit(2)
+        throw new Error(`Received error ${latestRelease.status} while fetching latest release name`)
     }
     const json = await latestRelease.json()
+    if (!json["tag_name"]) {
+        throw new Error(`Invalid response JSON.`)
+    }
     return json["tag_name"] as string
 }
 
