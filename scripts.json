@@ -12,8 +12,12 @@
         "exts": [
             "rmmodel",
             "ts",
-            "js",
-            "manifest"
+            "json"
+        ],
+        "match": [
+            "script.ts",
+            "bundleinfo.json",
+            "*.rmmodel"
         ],
         "legacy": false
     }

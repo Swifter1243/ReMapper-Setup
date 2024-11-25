@@ -1,6 +1,7 @@
 import * as rm from @VERSION
 
-const map = new rm.Difficulty("ExpertPlusNoArrows", "ExpertPlusStandard")
+const pipeline = rm.createPipeline()
+const map = rm.readDifficultyV3(pipeline, 'ExpertPlusStandard')
 
 // ----------- { SCRIPT } -----------
 
@@ -16,4 +17,6 @@ const map = new rm.Difficulty("ExpertPlusNoArrows", "ExpertPlusStandard")
 
 // ----------- { OUTPUT } -----------
 
-map.save()
+pipeline.export({
+    outputDirectory: '../OutputMaps'
+})

@@ -63,10 +63,6 @@ async function program() {
     const cacheBaseDirectory = getCacheBaseDirectory()
     const latestRM = await getLatestReMapperReleaseTag()
 
-    if (multipleDifficulties) {
-        throw new Error('Currently there\'s no examples for multi-diff scripts. That only exists in ReMapper 4.0.0, which isn\'t out yet.')
-    }
-
     // setup directories
     await Promise.all([
         fs.ensureDir(destination),
@@ -90,7 +86,13 @@ async function program() {
         }
         tasks.push(doProcess())
     }
-    addTextFile('script_single.ts', 'script.ts', editScript(latestRM))
+
+    if (multipleDifficulties) {
+        addTextFile('script_multiple.ts', 'script.ts', editScript(latestRM))
+    } else {
+        addTextFile('script_single.ts', 'script.ts', editScript(latestRM))
+    }
+
     addTextFile('scripts.json')
 
     // finish
