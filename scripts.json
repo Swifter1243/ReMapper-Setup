@@ -9,11 +9,6 @@
         }
     },
     "watcher": {
-        "exts": [
-            "rmmodel",
-            "ts",
-            "json"
-        ],
         "match": [
             "script.ts",
             "bundleinfo.json",
