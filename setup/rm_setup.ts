@@ -51,9 +51,37 @@ function getNamedDenoArgument(name: string, letter: string) {
     return Deno.args.find(a => a === `--${name}` || a === `-${letter}`)
 }
 
-function editScript(latestRM: string) {
+function editScript(latestRM: string, useUnitySetup: boolean): (content: string) => string {
     return (contents: string) => {
-        return contents.replace("@VERSION", `"https://deno.land/x/remapper@${latestRM}/src/mod.ts"`)
+        const lines = contents.split('\n')
+
+        function deleteMacro(definition: string, linesToRemove = 1) {
+            const index = lines.findIndex(x => x.includes(definition))
+            console.log(lines)
+            lines.splice(index, linesToRemove)
+        }
+        function replaceMacro(definition: string, replacement: string) {
+            const index = lines.findIndex(x => x.includes(definition))
+            lines[index] = lines[index].replace(definition, replacement)
+        }
+
+        replaceMacro('@VERSION', `"https://deno.land/x/remapper@${latestRM}/src/mod.ts"`)
+
+        if (useUnitySetup) {
+            replaceMacro('@BUNDLEIMPORT', `import * as bundleInfo from './bundleinfo.json' with { type: 'json' }`)
+            replaceMacro('@PIPELINE', `const pipeline = rm.createPipeline({ bundleInfo })`)
+            replaceMacro('@BUNDLEDEFINES', [
+                `const bundle = rm.loadBundle(bundleInfo)`,
+                `const materials = bundle.materials`,
+                `const prefabs = bundle.prefabs`
+            ].join('\n'))
+        } else {
+            deleteMacro('@BUNDLEIMPORT')
+            replaceMacro('@PIPELINE', `const pipeline = rm.createPipeline()`)
+            deleteMacro('@BUNDLEDEFINES', 2)
+        }
+        
+        return lines.join('\n')
     }
 }
 
@@ -61,7 +89,7 @@ async function program() {
     const destination = Deno.cwd()
     const version = await getLatestReMapperSetupReleaseTag()
     const multipleDifficulties = getNamedDenoArgument('multi-diff', 'm') !== undefined
-    const unitySetup = getNamedDenoArgument('unity-setup', 'u') !== undefined
+    const useUnitySetup = getNamedDenoArgument('unity-setup', 'u') !== undefined
     const cacheBaseDirectory = getCacheBaseDirectory()
     const latestRM = await getLatestReMapperReleaseTag()
     const mapName = await path.basename(destination)
@@ -87,7 +115,7 @@ async function program() {
         tasks.push(doProcess())
     }
 
-    if (unitySetup) {
+    if (useUnitySetup) {
         const srcUnity = path.join(cacheVersionPath, '/unity_2019')
         const dstUnity = path.join(destination, `/${mapName}_unity_2019`)
         tasks.push(fs.copy(srcUnity, dstUnity))
@@ -96,10 +124,11 @@ async function program() {
         )
     }
 
+    const scriptFn = editScript(latestRM, useUnitySetup)
     if (multipleDifficulties) {
-        addTextFile('script_multiple.ts', 'script.ts', editScript(latestRM))
+        addTextFile('script_multiple.ts', 'script.ts', scriptFn)
     } else {
-        addTextFile('script_single.ts', 'script.ts', editScript(latestRM))
+        addTextFile('script_single.ts', 'script.ts', scriptFn)
     }
 
     addTextFile('scripts.json')

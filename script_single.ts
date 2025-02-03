@@ -1,7 +1,10 @@
 import * as rm from @VERSION
+@BUNDLEIMPORT
 
-const pipeline = rm.createPipeline()
+@PIPELINE
 const map = rm.readDifficultyV3(pipeline, 'ExpertPlusStandard')
+
+@BUNDLEDEFINES
 
 // ----------- { SCRIPT } -----------
 

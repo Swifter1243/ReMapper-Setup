@@ -1,6 +1,9 @@
 import * as rm from @VERSION
+@BUNDLEIMPORT
 
-const pipeline = rm.createPipeline()
+@PIPELINE
+
+@BUNDLEDEFINES
 
 // ----------- { SCRIPT } -----------
 
