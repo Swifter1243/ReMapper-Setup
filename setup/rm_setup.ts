@@ -139,6 +139,7 @@ async function program() {
         const srcUnity = path.join(cacheVersionPath, '/unity_2019')
         const dstUnity = path.join(destination, `/${mapName}_unity_2019`)
         tasks.push(fs.copy(srcUnity, dstUnity))
+        addTextFile('bundleinfo.json')
     }
 
     const scriptFn = editScript(latestRM, useUnitySetup)
