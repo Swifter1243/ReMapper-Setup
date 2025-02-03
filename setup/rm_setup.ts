@@ -85,11 +85,25 @@ function editScript(latestRM: string, useUnitySetup: boolean): (content: string)
     }
 }
 
+async function setupGit() {
+    await new Deno.Command("git", {
+        args: ['init'],
+        stdout: "inherit",
+        stderr: "inherit",
+    }).spawn().status
+    await new Deno.Command("git", {
+        args: ["add", "."],
+        stdout: "inherit",
+        stderr: "inherit",
+    }).spawn().status
+}
+
 async function program() {
     const destination = Deno.cwd()
     const version = await getLatestReMapperSetupReleaseTag()
     const multipleDifficulties = getNamedDenoArgument('multi-diff', 'm') !== undefined
     const useUnitySetup = getNamedDenoArgument('unity-setup', 'u') !== undefined
+    const useGitSetup = getNamedDenoArgument('git-setup', 'g') !== undefined
     const cacheBaseDirectory = getCacheBaseDirectory()
     const latestRM = await getLatestReMapperReleaseTag()
     const mapName = await path.basename(destination)
@@ -115,13 +129,16 @@ async function program() {
         tasks.push(doProcess())
     }
 
+    if (useGitSetup) {
+        addTextFile('rootignore.txt', '.gitignore', 
+            content => content.replace('@QUESTIGNORE', `/${mapName}_unity_2021`)
+        )
+    }
+
     if (useUnitySetup) {
         const srcUnity = path.join(cacheVersionPath, '/unity_2019')
         const dstUnity = path.join(destination, `/${mapName}_unity_2019`)
         tasks.push(fs.copy(srcUnity, dstUnity))
-        addTextFile('rootignore.txt', '.gitignore', 
-            content => content.replace('@QUESTIGNORE', `/${mapName}_unity_2021`)
-        )
     }
 
     const scriptFn = editScript(latestRM, useUnitySetup)
@@ -135,6 +152,11 @@ async function program() {
 
     // finish
     await Promise.all(tasks)
+
+    if (useGitSetup) {
+        await setupGit()
+    }
+
     console.log(`Successfully setup new map at ${destination}`)
 }
 
