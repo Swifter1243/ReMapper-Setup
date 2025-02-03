@@ -61,6 +61,7 @@ async function program() {
     const destination = Deno.cwd()
     const version = await getLatestReMapperSetupReleaseTag()
     const multipleDifficulties = getNamedDenoArgument('multi-diff', 'm') !== undefined
+    const unitySetup = getNamedDenoArgument('unity-setup', 'u') !== undefined
     const cacheBaseDirectory = getCacheBaseDirectory()
     const latestRM = await getLatestReMapperReleaseTag()
 
@@ -69,7 +70,8 @@ async function program() {
         fs.ensureDir(destination),
         fs.ensureDir(cacheBaseDirectory)
     ])
-    const cacheVersionPath = await getCacheVersionPath(cacheBaseDirectory, version)
+    // const cacheVersionPath = await getCacheVersionPath(cacheBaseDirectory, version)
+    const cacheVersionPath = 'E:/Users/Programs/ReMapper-Setup'
 
     // copy files
     const tasks: Promise<void>[] = []
@@ -86,6 +88,10 @@ async function program() {
             await Deno.writeTextFile(dest, fileContents)
         }
         tasks.push(doProcess())
+    }
+
+    if (unitySetup) {
+        addTextFile('rootignore.txt', '.gitignore')
     }
 
     if (multipleDifficulties) {
