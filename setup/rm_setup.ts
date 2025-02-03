@@ -81,11 +81,7 @@ async function program() {
         const dest = path.join(destination, dstFile)
         async function doProcess() {
             let fileContents = await Deno.readTextFile(src)
-
-            if (changeContents) {
-                fileContents = changeContents(fileContents)
-            }
-    
+            if (changeContents) fileContents = changeContents(fileContents)
             await Deno.writeTextFile(dest, fileContents)
         }
         tasks.push(doProcess())
