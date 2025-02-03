@@ -64,6 +64,7 @@ async function program() {
     const unitySetup = getNamedDenoArgument('unity-setup', 'u') !== undefined
     const cacheBaseDirectory = getCacheBaseDirectory()
     const latestRM = await getLatestReMapperReleaseTag()
+    const mapName = await path.basename(destination)
 
     // setup directories
     await Promise.all([
@@ -92,6 +93,9 @@ async function program() {
 
     if (unitySetup) {
         addTextFile('rootignore.txt', '.gitignore')
+        const srcUnity = path.join(cacheVersionPath, '/unity_2019')
+        const dstUnity = path.join(destination, `/${mapName}_unity_2019`)
+        tasks.push(fs.copy(srcUnity, dstUnity))
     }
 
     if (multipleDifficulties) {
