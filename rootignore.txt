@@ -20,4 +20,4 @@ RM_Cache.json
 deno.lock
 
 # 2021 project (for quest)
-/you_unity_2021
+@QUESTIGNORE

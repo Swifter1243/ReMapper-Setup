@@ -92,9 +92,11 @@ async function program() {
     }
 
     if (unitySetup) {
-        addTextFile('rootignore.txt', '.gitignore')
         const srcUnity = path.join(cacheVersionPath, '/unity_2019')
         const dstUnity = path.join(destination, `/${mapName}_unity_2019`)
+        addTextFile('rootignore.txt', '.gitignore', 
+            content => content.replace('@QUESTIGNORE', `/${mapName}_unity_2021`)
+        )
         tasks.push(fs.copy(srcUnity, dstUnity))
     }
 
