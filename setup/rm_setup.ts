@@ -90,10 +90,10 @@ async function program() {
     if (unitySetup) {
         const srcUnity = path.join(cacheVersionPath, '/unity_2019')
         const dstUnity = path.join(destination, `/${mapName}_unity_2019`)
+        tasks.push(fs.copy(srcUnity, dstUnity))
         addTextFile('rootignore.txt', '.gitignore', 
             content => content.replace('@QUESTIGNORE', `/${mapName}_unity_2021`)
         )
-        tasks.push(fs.copy(srcUnity, dstUnity))
     }
 
     if (multipleDifficulties) {
