@@ -123,7 +123,10 @@ async function program() {
         async function doProcess() {
             let fileContents = await Deno.readTextFile(src)
             if (changeContents) fileContents = changeContents(fileContents)
-            await Deno.writeTextFile(dest, fileContents)
+            await Deno.writeTextFile(dest, fileContents, {
+                create: false,
+                createNew: false
+            })
         }
         tasks.push(doProcess())
     }
