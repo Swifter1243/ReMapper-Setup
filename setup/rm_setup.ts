@@ -113,8 +113,7 @@ async function program() {
         fs.ensureDir(destination),
         fs.ensureDir(cacheBaseDirectory)
     ])
-    // const cacheVersionPath = await getCacheVersionPath(cacheBaseDirectory, version)
-    const cacheVersionPath = 'E:/Users/Programs/ReMapper-Setup'
+    const cacheVersionPath = await getCacheVersionPath(cacheBaseDirectory, version)
 
     // copy files
     const tasks: Promise<void>[] = []
