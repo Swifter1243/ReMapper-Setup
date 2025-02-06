@@ -20,3 +20,8 @@ There's also some flags you can set:
 - `multi-diff` or `m` - Prepare script for difficulties.
 - `unity-setup` or `u` - Create a Unity `2019.4.28f1` project, and prepare script for [VivifyTemplate](https://github.com/Swifter1243/VivifyTemplate) usage.
 - `git-setup` or `g` - Setup your project with git, creating an appropriate `.gitignore`.
+
+You can use as many of these flags as you'd like. Here's an example for flag usage:
+```
+rm_setup m g
+```
