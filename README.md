@@ -27,6 +27,7 @@ You can use as many of these flags as you'd like. For example:
 ```
 rm_setup -m -u
 ```
+or
 ```
 rm_setup --multi-diff --unity-setup
 ```
