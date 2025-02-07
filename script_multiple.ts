@@ -28,5 +28,5 @@ await Promise.all([
 // ----------- { OUTPUT } -----------
 
 pipeline.export({
-    outputDirectory: '../OutputMaps/Your Map'
+    outputDirectory: '../OutputMaps/@MAPNAME'
 })

@@ -64,7 +64,11 @@ function getArgument(promptText: string): boolean {
     }
 }
 
-function editScript(latestRM: string, useUnitySetup: boolean): (content: string) => string {
+function editScript(info: {
+    latestRM: string,
+    useUnitySetup: boolean,
+    mapName: string
+}): (content: string) => string {
     return (contents: string) => {
         const lines = contents.split('\n')
 
@@ -77,9 +81,10 @@ function editScript(latestRM: string, useUnitySetup: boolean): (content: string)
             lines[index] = lines[index].replace(definition, replacement)
         }
 
-        replaceMacro('@VERSION', `"https://deno.land/x/remapper@${latestRM}/src/mod.ts"`)
+        replaceMacro('@VERSION', `"https://deno.land/x/remapper@${info.latestRM}/src/mod.ts"`)
+        replaceMacro('@MAPNAME', info.mapName)
 
-        if (useUnitySetup) {
+        if (info.useUnitySetup) {
             replaceMacro('@BUNDLEIMPORT', `import * as bundleInfo from './bundleinfo.json' with { type: 'json' }`)
             replaceMacro('@PIPELINE', `const pipeline = rm.createPipeline({ bundleInfo })`)
             replaceMacro('@BUNDLEDEFINES', [
@@ -159,7 +164,11 @@ async function program() {
         addTextFile('bundleinfo.json')
     }
 
-    const scriptFn = editScript(latestRM, useUnitySetup)
+    const scriptFn = editScript({
+        latestRM, 
+        useUnitySetup,
+        mapName
+    })
     if (multipleDifficulties) {
         addTextFile('script_multiple.ts', 'script.ts', scriptFn)
     } else {

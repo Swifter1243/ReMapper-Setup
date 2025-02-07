@@ -21,5 +21,5 @@ const map = rm.readDifficultyV3(pipeline, 'ExpertPlusStandard')
 // ----------- { OUTPUT } -----------
 
 pipeline.export({
-    outputDirectory: '../OutputMaps/Your Map'
+    outputDirectory: '../OutputMaps/@MAPNAME'
 })
