@@ -47,8 +47,21 @@ async function getCacheVersionPath(cacheBaseDirectory: string, version: string) 
     return cacheVersionPath
 }
 
-function getNamedDenoArgument(name: string, letter: string) {
-    return Deno.args.find(a => a === `--${name}` || a === `-${letter}`)
+function getArgument(promptText: string): boolean {
+    while (true) {
+        const input = prompt(promptText + " (y/n):")
+        
+        if (!input) continue
+
+        if (input.toLowerCase() === "y") {
+            return true
+        } else if (input.toLowerCase() === "n") {
+            return false
+        } else {
+            console.log("Invalid input. Try again.")
+            continue
+        }
+    }
 }
 
 function editScript(latestRM: string, useUnitySetup: boolean): (content: string) => string {
@@ -57,7 +70,6 @@ function editScript(latestRM: string, useUnitySetup: boolean): (content: string)
 
         function deleteMacro(definition: string, linesToRemove = 1) {
             const index = lines.findIndex(x => x.includes(definition))
-            console.log(lines)
             lines.splice(index, linesToRemove)
         }
         function replaceMacro(definition: string, replacement: string) {
@@ -99,11 +111,11 @@ async function setupGit() {
 }
 
 async function program() {
+    const multipleDifficulties = getArgument("Would you like to setup the project for multiple difficulties?")
+    const useUnitySetup = getArgument("Would you like to setup the project for Unity?")
+    const useGitSetup = getArgument("Would you like to setup Git?")
     const destination = Deno.cwd()
     const version = await getLatestReMapperSetupReleaseTag()
-    const multipleDifficulties = getNamedDenoArgument('multi-diff', 'm') !== undefined
-    const useUnitySetup = getNamedDenoArgument('unity-setup', 'u') !== undefined
-    const useGitSetup = getNamedDenoArgument('git-setup', 'g') !== undefined
     const cacheBaseDirectory = getCacheBaseDirectory()
     const latestRM = await getLatestReMapperReleaseTag()
     const mapName = await path.basename(destination)
@@ -123,10 +135,12 @@ async function program() {
         async function doProcess() {
             let fileContents = await Deno.readTextFile(src)
             if (changeContents) fileContents = changeContents(fileContents)
-            await Deno.writeTextFile(dest, fileContents, {
-                create: false,
-                createNew: false
-            })
+            if (await fs.exists(dest)) {
+                console.log('\x1b[31m%s\x1b[0m', `The file '${dest}' already exists.`)
+            }
+            else {
+                await Deno.writeTextFile(dest, fileContents)
+            }
         }
         tasks.push(doProcess())
     }
