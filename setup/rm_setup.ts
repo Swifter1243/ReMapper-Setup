@@ -151,9 +151,10 @@ async function program() {
         )
     }
 
+    const unityProjectName = `${mapName}_unity_2019`
     if (useUnitySetup) {
         const srcUnity = path.join(cacheVersionPath, '/unity_2019')
-        const dstUnity = path.join(destination, `/${mapName}_unity_2019`)
+        const dstUnity = path.join(destination, '/' + unityProjectName)
         tasks.push(fs.copy(srcUnity, dstUnity))
         addTextFile('bundleinfo.json')
     }
@@ -174,7 +175,12 @@ async function program() {
         await setupGit()
     }
 
-    console.log(`Successfully setup new map at ${destination}`)
+    console.log('%c' + `Successfully setup new map at ${destination}`, 'color: Green')
+
+    if (useUnitySetup) {
+        console.log('%c' + `Add the '${unityProjectName}' folder to your Unity Hub to enter the project.`, "color: Yellow")
+        console.log('%c' + "Download VivifyTemplate to get started with Vivify: https://github.com/Swifter1243/VivifyTemplate?tab=readme-ov-file#setup", "color: Yellow")
+    }
 }
 
 await program()
