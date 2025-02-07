@@ -112,7 +112,7 @@ async function setupGit() {
 
 async function program() {
     const multipleDifficulties = getArgument("Would you like to setup the project for multiple difficulties?")
-    const useUnitySetup = getArgument("Would you like to setup the project for Unity?")
+    const useUnitySetup = getArgument("Would you like to setup the project for Unity/Vivify?")
     const useGitSetup = getArgument("Would you like to setup Git?")
     const destination = Deno.cwd()
     const version = await getLatestReMapperSetupReleaseTag()
@@ -178,7 +178,7 @@ async function program() {
     console.log('%c' + `Successfully setup new map at ${destination}`, 'color: Green')
 
     if (useUnitySetup) {
-        console.log('%c' + `Add the '${unityProjectName}' folder to your Unity Hub to enter the project.`, "color: Yellow")
+        console.log('%c' + `Add the '${unityProjectName}' folder to your Unity Hub to enter the project. (Add > Add project from disk)`, "color: Yellow")
         console.log('%c' + "Download VivifyTemplate to get started with Vivify: https://github.com/Swifter1243/VivifyTemplate?tab=readme-ov-file#setup", "color: Yellow")
     }
 }
