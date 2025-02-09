@@ -160,7 +160,6 @@ async function program() {
     const unityProjectName = `${mapName}_unity_2019`
     if (useUnitySetup) {
         const dstUnity = path.join(destination, '/' + unityProjectName)
-        console.log('%c' + "Setting up unity project...", "color: Yellow")
         tasks.push(createUnityProject(dstUnity))
         addTextFile('bundleinfo.json')
     }

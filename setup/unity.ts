@@ -40,6 +40,8 @@ async function findUnityExecutable(): Promise<string | null> {
 }
 
 export async function createUnityProject(projectPath: string): Promise<boolean> {
+    console.log(`Setting up Unity project at '${projectPath}'...`)
+
     const unityPath = await findUnityExecutable();
     if (!unityPath) {
         console.error("Unity 2019.4.28f1 not found.");
