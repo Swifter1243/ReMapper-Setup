@@ -103,10 +103,20 @@ export async function createUnityProject(projectPath: string): Promise<boolean> 
         stdout: "piped",
         stderr: "piped",
     });
-    const { stdout, stderr } = await process.output();
     
-    console.log(new TextDecoder().decode(stdout));
-    console.error(new TextDecoder().decode(stderr));
+    const commandProcess = process.spawn();
     
-    return await fs.exists(projectPath);
+    if (commandProcess.stdout) {
+        for await (const chunk of commandProcess.stdout) {
+            console.log(new TextDecoder().decode(chunk));
+        }
+    }
+    if (commandProcess.stderr) {
+        for await (const chunk of commandProcess.stderr) {
+            console.error(new TextDecoder().decode(chunk));
+        }
+    }
+    
+    const status = await commandProcess.status;
+    return status.success && await fs.exists(projectPath);
 }
