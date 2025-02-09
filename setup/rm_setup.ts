@@ -47,26 +47,83 @@ async function getCacheVersionPath(cacheBaseDirectory: string, version: string) 
     return cacheVersionPath
 }
 
-function getNamedDenoArgument(name: string, letter: string) {
-    return Deno.args.find(a => a === `--${name}` || a === `-${letter}`)
+function getArgument(promptText: string): boolean {
+    while (true) {
+        const input = prompt(promptText + " (y/n):")
+        
+        if (!input) continue
+
+        if (input.toLowerCase() === "y") {
+            return true
+        } else if (input.toLowerCase() === "n") {
+            return false
+        } else {
+            console.log("Invalid input. Try again.")
+            continue
+        }
+    }
 }
 
-function editScript(latestRM: string) {
+function editScript(info: {
+    latestRM: string,
+    useUnitySetup: boolean,
+    mapName: string
+}): (content: string) => string {
     return (contents: string) => {
-        return contents.replace("@VERSION", `"https://deno.land/x/remapper@${latestRM}/src/mod.ts"`)
+        const lines = contents.split('\n')
+
+        function deleteMacro(definition: string, linesToRemove = 1) {
+            const index = lines.findIndex(x => x.includes(definition))
+            lines.splice(index, linesToRemove)
+        }
+        function replaceMacro(definition: string, replacement: string) {
+            const index = lines.findIndex(x => x.includes(definition))
+            lines[index] = lines[index].replace(definition, replacement)
+        }
+
+        replaceMacro('@VERSION', `"https://deno.land/x/remapper@${info.latestRM}/src/mod.ts"`)
+        replaceMacro('@MAPNAME', info.mapName)
+
+        if (info.useUnitySetup) {
+            replaceMacro('@BUNDLEIMPORT', `import * as bundleInfo from './bundleinfo.json' with { type: 'json' }`)
+            replaceMacro('@PIPELINE', `const pipeline = rm.createPipeline({ bundleInfo })`)
+            replaceMacro('@BUNDLEDEFINES', [
+                `const bundle = rm.loadBundle(bundleInfo)`,
+                `const materials = bundle.materials`,
+                `const prefabs = bundle.prefabs`
+            ].join('\n'))
+        } else {
+            deleteMacro('@BUNDLEIMPORT')
+            replaceMacro('@PIPELINE', `const pipeline = rm.createPipeline()`)
+            deleteMacro('@BUNDLEDEFINES', 2)
+        }
+        
+        return lines.join('\n')
     }
+}
+
+async function setupGit() {
+    await new Deno.Command("git", {
+        args: ['init'],
+        stdout: "inherit",
+        stderr: "inherit",
+    }).spawn().status
+    await new Deno.Command("git", {
+        args: ["add", "."],
+        stdout: "inherit",
+        stderr: "inherit",
+    }).spawn().status
 }
 
 async function program() {
+    const multipleDifficulties = getArgument("Would you like to setup the project for multiple difficulties?")
+    const useUnitySetup = getArgument("Would you like to setup the project for Unity/Vivify?")
+    const useGitSetup = getArgument("Would you like to setup Git?")
     const destination = Deno.cwd()
     const version = await getLatestReMapperSetupReleaseTag()
-    const multipleDifficulties = getNamedDenoArgument('multi-diff', 'm') !== undefined
     const cacheBaseDirectory = getCacheBaseDirectory()
     const latestRM = await getLatestReMapperReleaseTag()
-
-    if (multipleDifficulties) {
-        throw new Error('Currently there\'s no examples for multi-diff scripts. That only exists in ReMapper 4.0.0, which isn\'t out yet.')
-    }
+    const mapName = await path.basename(destination)
 
     // setup directories
     await Promise.all([
@@ -82,21 +139,57 @@ async function program() {
         const dest = path.join(destination, dstFile)
         async function doProcess() {
             let fileContents = await Deno.readTextFile(src)
-
-            if (changeContents) {
-                fileContents = changeContents(fileContents)
+            if (changeContents) fileContents = changeContents(fileContents)
+            if (await fs.exists(dest)) {
+                console.log('\x1b[31m%s\x1b[0m', `The file '${dest}' already exists.`)
             }
-    
-            await Deno.writeTextFile(dest, fileContents)
+            else {
+                await Deno.writeTextFile(dest, fileContents)
+            }
         }
         tasks.push(doProcess())
     }
-    addTextFile('script_single.ts', 'script.ts', editScript(latestRM))
+
+    if (useGitSetup) {
+        addTextFile('rootignore.txt', '.gitignore', 
+            content => content.replace('@QUESTIGNORE', `/${mapName}_unity_2021`)
+        )
+    }
+
+    const unityProjectName = `${mapName}_unity_2019`
+    if (useUnitySetup) {
+        const srcUnity = path.join(cacheVersionPath, '/unity_2019')
+        const dstUnity = path.join(destination, '/' + unityProjectName)
+        tasks.push(fs.copy(srcUnity, dstUnity))
+        addTextFile('bundleinfo.json')
+    }
+
+    const scriptFn = editScript({
+        latestRM, 
+        useUnitySetup,
+        mapName
+    })
+    if (multipleDifficulties) {
+        addTextFile('script_multiple.ts', 'script.ts', scriptFn)
+    } else {
+        addTextFile('script_single.ts', 'script.ts', scriptFn)
+    }
+
     addTextFile('scripts.json')
 
     // finish
     await Promise.all(tasks)
-    console.log(`Successfully setup new map at ${destination}`)
+
+    if (useGitSetup) {
+        await setupGit()
+    }
+
+    console.log('%c' + `Successfully setup new map at ${destination}`, 'color: Green')
+
+    if (useUnitySetup) {
+        console.log('%c' + `Add the '${unityProjectName}' folder to your Unity Hub to enter the project. (Add > Add project from disk)`, "color: Yellow")
+        console.log('%c' + "Download VivifyTemplate to get started with Vivify: https://github.com/Swifter1243/VivifyTemplate?tab=readme-ov-file#setup", "color: Yellow")
+    }
 }
 
 await program()

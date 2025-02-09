@@ -1,6 +1,10 @@
 import * as rm from @VERSION
+@BUNDLEIMPORT
 
-const map = new rm.Difficulty("ExpertPlusNoArrows", "ExpertPlusStandard")
+@PIPELINE
+const map = rm.readDifficultyV3(pipeline, 'ExpertPlusStandard')
+
+@BUNDLEDEFINES
 
 // ----------- { SCRIPT } -----------
 
@@ -16,4 +20,6 @@ const map = new rm.Difficulty("ExpertPlusNoArrows", "ExpertPlusStandard")
 
 // ----------- { OUTPUT } -----------
 
-map.save()
+pipeline.export({
+    outputDirectory: '../OutputMaps/@MAPNAME'
+})

@@ -9,11 +9,10 @@
         }
     },
     "watcher": {
-        "exts": [
-            "rmmodel",
-            "ts",
-            "js",
-            "manifest"
+        "match": [
+            "script.ts",
+            "bundleinfo.json",
+            "*.rmmodel"
         ],
         "legacy": false
     }
