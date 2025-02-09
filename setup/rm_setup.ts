@@ -137,7 +137,7 @@ async function program() {
     const tasks: Promise<unknown>[] = []
     function addTextFile(srcFile: string, dstFile = srcFile, changeContents?: (fileContents: string) => string) {
         const src = path.join(cacheVersionPath, srcFile)
-        const dest = path.join(destination, dstFile)
+        const dest = dstFile
         async function doProcess() {
             let fileContents = await Deno.readTextFile(src)
             if (changeContents) fileContents = changeContents(fileContents)
@@ -151,6 +151,16 @@ async function program() {
         tasks.push(doProcess())
     }
 
+    async function setupUnityProject(dstUnity: string) {
+        await createUnityProject(dstUnity)
+
+        if (useGitSetup) {
+            const src = path.join(cacheVersionPath, 'unityignore.txt')
+            const dest = path.join(dstUnity, '.gitignore')
+            await fs.copy(src, dest)
+        }
+    }
+
     if (useGitSetup) {
         addTextFile('rootignore.txt', '.gitignore', 
             content => content.replace('@QUESTIGNORE', `/${mapName}_unity_2021`)
@@ -160,7 +170,7 @@ async function program() {
     const unityProjectName = `${mapName}_unity_2019`
     if (useUnitySetup) {
         const dstUnity = path.join(destination, '/' + unityProjectName)
-        tasks.push(createUnityProject(dstUnity))
+        tasks.push(setupUnityProject(dstUnity))
         addTextFile('bundleinfo.json')
     }
 
