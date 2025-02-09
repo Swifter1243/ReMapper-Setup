@@ -86,7 +86,7 @@ function editScript(info: {
 
         if (info.useUnitySetup) {
             replaceMacro('@BUNDLEIMPORT', `import * as bundleInfo from './bundleinfo.json' with { type: 'json' }`)
-            replaceMacro('@PIPELINE', `const pipeline = rm.createPipeline({ bundleInfo })`)
+            replaceMacro('@PIPELINE', `const pipeline = await rm.createPipeline({ bundleInfo })`)
             replaceMacro('@BUNDLEDEFINES', [
                 `const bundle = rm.loadBundle(bundleInfo)`,
                 `const materials = bundle.materials`,
@@ -94,7 +94,7 @@ function editScript(info: {
             ].join('\n'))
         } else {
             deleteMacro('@BUNDLEIMPORT')
-            replaceMacro('@PIPELINE', `const pipeline = rm.createPipeline()`)
+            replaceMacro('@PIPELINE', `const pipeline = await rm.createPipeline()`)
             deleteMacro('@BUNDLEDEFINES', 2)
         }
         
