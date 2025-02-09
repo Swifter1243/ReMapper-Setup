@@ -2,6 +2,7 @@
 
 import cloneTemplateToCache from "./clone.ts";
 import { configDir, path, fs } from "./deps.ts";
+import { createUnityProject } from "./unity.ts";
 
 function getCacheBaseDirectory() {
     const userDir = configDir();
@@ -133,7 +134,7 @@ async function program() {
     const cacheVersionPath = await getCacheVersionPath(cacheBaseDirectory, version)
 
     // copy files
-    const tasks: Promise<void>[] = []
+    const tasks: Promise<unknown>[] = []
     function addTextFile(srcFile: string, dstFile = srcFile, changeContents?: (fileContents: string) => string) {
         const src = path.join(cacheVersionPath, srcFile)
         const dest = path.join(destination, dstFile)
@@ -158,9 +159,9 @@ async function program() {
 
     const unityProjectName = `${mapName}_unity_2019`
     if (useUnitySetup) {
-        const srcUnity = path.join(cacheVersionPath, '/unity_2019')
         const dstUnity = path.join(destination, '/' + unityProjectName)
-        tasks.push(fs.copy(srcUnity, dstUnity))
+        console.log('%c' + "Setting up unity project...", "color: Yellow")
+        tasks.push(createUnityProject(dstUnity))
         addTextFile('bundleinfo.json')
     }
 
