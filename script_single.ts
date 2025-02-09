@@ -2,7 +2,7 @@ import * as rm from @VERSION
 @BUNDLEIMPORT
 
 @PIPELINE
-const map = rm.readDifficultyV3(pipeline, 'ExpertPlusStandard')
+const map = await rm.readDifficultyV3(pipeline, 'ExpertPlusStandard')
 
 @BUNDLEDEFINES
 
