@@ -44,17 +44,21 @@ async function getUnityHub() {
 
 async function findUnityEditor(unityHubPath: string, version: string): Promise<string | null> {
     const process = new Deno.Command(unityHubPath, {
-        args: ["--headless", "--", "editors"],
+        args: ["--", "--headless", "editors", "-i"],
         stdout: "piped",
         stderr: "null",
     });
     const { stdout } = await process.output();
     const output = new TextDecoder().decode(stdout);
     
-    const match = output.match(new RegExp(`(?<path>.+${version}.+)`));
-    if (match && match.groups) {
-        return match.groups.path;
-    }
+    const lines = output.split("\n").map(line => line.trim()).filter(line => line.length > 0)
+    lines.forEach(line => {
+        const match = line.match(new RegExp(`${version} , installed at (.+)`))
+        if (match) {
+            return match
+        }
+    })
+    
     return null;
 }
 
