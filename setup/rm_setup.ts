@@ -117,7 +117,6 @@ async function setupGit() {
 }
 
 async function program() {
-    const multipleDifficulties = getArgument("Would you like to setup the project for multiple difficulties?")
     const useUnitySetup = getArgument("Would you like to setup the project for Unity/Vivify?")
     const useGitSetup = getArgument("Would you like to setup Git?")
     const destination = Deno.cwd()
@@ -181,12 +180,7 @@ async function program() {
         mapName
     })
     const SCRIPT_DIR = 'src/script.ts'
-    if (multipleDifficulties) {
-        addTextFile('script_multiple.ts', SCRIPT_DIR, scriptFn)
-    } else {
-        addTextFile('script_single.ts', SCRIPT_DIR, scriptFn)
-    }
-
+    addTextFile('script_multiple.ts', SCRIPT_DIR, scriptFn)
     addTextFile('scripts.json')
 
     // finish
