@@ -179,8 +179,8 @@ async function program() {
         useUnitySetup,
         mapName
     })
-    const SCRIPT_DIR = 'src/script.ts'
-    addTextFile('script_multiple.ts', SCRIPT_DIR, scriptFn)
+    const MAIN_DIR = 'src/main.ts'
+    addTextFile('script_multiple.ts', MAIN_DIR, scriptFn)
     addTextFile('scripts.json')
 
     // finish

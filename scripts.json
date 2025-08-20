@@ -4,7 +4,7 @@
     ],
     "scripts": {
         "rm": {
-            "cmd": "deno run --no-check script.ts",
+            "cmd": "deno run --no-check src/main.ts",
             "desc": "start ReMapper"
         }
     },
