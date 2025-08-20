@@ -10,7 +10,7 @@
     },
     "watcher": {
         "match": [
-            "script.ts",
+            "src/**/*.ts",
             "bundleinfo.json",
             "*.rmmodel"
         ],

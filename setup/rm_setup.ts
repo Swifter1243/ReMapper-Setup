@@ -129,7 +129,8 @@ async function program() {
     // setup directories
     await Promise.all([
         fs.ensureDir(destination),
-        fs.ensureDir(cacheBaseDirectory)
+        fs.ensureDir(cacheBaseDirectory),
+        fs.ensureDir(path.join(destination, 'src'))
     ])
     const cacheVersionPath = await getCacheVersionPath(cacheBaseDirectory, version)
 
@@ -179,10 +180,11 @@ async function program() {
         useUnitySetup,
         mapName
     })
+    const SCRIPT_DIR = 'src/script.ts'
     if (multipleDifficulties) {
-        addTextFile('script_multiple.ts', 'script.ts', scriptFn)
+        addTextFile('script_multiple.ts', SCRIPT_DIR, scriptFn)
     } else {
-        addTextFile('script_single.ts', 'script.ts', scriptFn)
+        addTextFile('script_single.ts', SCRIPT_DIR, scriptFn)
     }
 
     addTextFile('scripts.json')
