@@ -86,7 +86,7 @@ function editScript(info: {
         replaceMacro('@MAPNAME', info.mapName)
 
         if (info.useUnitySetup) {
-            replaceMacro('@BUNDLEIMPORT', `import * as bundleInfo from './bundleinfo.json' with { type: 'json' }`)
+            replaceMacro('@BUNDLEIMPORT', `import * as bundleInfo from '../bundleinfo.json' with { type: 'json' }`)
             replaceMacro('@PIPELINE', `const pipeline = await rm.createPipeline({ bundleInfo })`)
             replaceMacro('@BUNDLEDEFINES', [
                 `const bundle = rm.loadBundle(bundleInfo)`,
