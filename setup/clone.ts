@@ -36,9 +36,9 @@ export default async function cloneTemplateToCache(
   } catch (e) {
     if (e instanceof Deno.errors.NotFound) {
       if (Deno.build.os === "linux") {
-        console.error("Download git using your system's package manager");
+        throw new Error("Error: Git not found on system. Download Git using your system's package manager.");
       } else {
-        console.error("Download git at https://git-scm.com/downloads");
+        throw new Error("Error: Git not found on system. Download Git at https://git-scm.com/downloads");
       }
       Deno.exit(1);
     }
