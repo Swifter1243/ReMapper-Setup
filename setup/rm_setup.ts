@@ -67,7 +67,7 @@ function getArgument(promptText: string): boolean {
 
 function editScript(info: {
     latestRM: string,
-    useUnitySetup: boolean,
+    useVivifySetup: boolean,
     mapName: string
 }): (content: string) => string {
     return (contents: string) => {
@@ -85,7 +85,7 @@ function editScript(info: {
         replaceMacro('@VERSION', `"https://deno.land/x/remapper@${info.latestRM}/src/mod.ts"`)
         replaceMacro('@MAPNAME', info.mapName)
 
-        if (info.useUnitySetup) {
+        if (info.useVivifySetup) {
             replaceMacro('@BUNDLEIMPORT', `import * as bundleInfo from '../bundleinfo.json' with { type: 'json' }`)
             replaceMacro('@PIPELINE', `const pipeline = await rm.createPipeline({ bundleInfo })`)
             replaceMacro('@BUNDLEDEFINES', [
@@ -117,7 +117,13 @@ async function setupGit() {
 }
 
 async function program() {
-    const useUnitySetup = getArgument("Would you like to setup the project for Unity/Vivify?")
+    const useVivifySetup = getArgument("Would you like to setup the project for Vivify?")
+
+    let doCreateUnityProject = false
+    if (useVivifySetup) {
+        doCreateUnityProject = getArgument("Would you like to automatically create the Unity project?")
+    }
+
     const useGitSetup = getArgument("Would you like to setup Git?")
     const destination = Deno.cwd()
     const version = await getLatestReMapperSetupReleaseTag()
@@ -167,16 +173,19 @@ async function program() {
         )
     }
 
+    if (useVivifySetup) {
+        addTextFile('bundleinfo.json')
+    }
+
     const unityProjectName = `${mapName}_unity_2019`
-    if (useUnitySetup) {
+    if (doCreateUnityProject) {
         const dstUnity = path.join(destination, '/' + unityProjectName)
         tasks.push(setupUnityProject(dstUnity))
-        addTextFile('bundleinfo.json')
     }
 
     const scriptFn = editScript({
         latestRM, 
-        useUnitySetup,
+        useVivifySetup,
         mapName
     })
     const MAIN_DIR = 'src/main.ts'
@@ -192,8 +201,13 @@ async function program() {
 
     console.log('%c' + `Successfully setup new map at ${destination}`, 'color: Green')
 
-    if (useUnitySetup) {
+    if (doCreateUnityProject) {
         console.log('%c' + `Add the '${unityProjectName}' folder to your Unity Hub to enter the project. (Add > Add project from disk)`, "color: Yellow")
+    } else {
+        console.log('%c' + `Create the Unity project in the Unity Hub for version 2019.4.28f1 and place it inside of your map folder.`, "color: Yellow")
+    }
+
+    if (useVivifySetup) {
         console.log('%c' + "Download VivifyTemplate to get started with Vivify: https://github.com/Swifter1243/VivifyTemplate?tab=readme-ov-file#setup", "color: Yellow")
     }
 }
