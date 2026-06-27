@@ -53,7 +53,7 @@ async function findUnityEditor(unityHubPath: string, version: string): Promise<s
     
     const lines = output.split("\n").map(line => line.trim()).filter(line => line.length > 0)
     for (const line of lines) {
-        const match = line.match(new RegExp(`${version} , installed at (.+)`))
+        const match = line.match(new RegExp(`${version}\\s*installed at (.+)`))
         if (match) {
             return match[1]
         }
